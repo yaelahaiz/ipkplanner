@@ -39,17 +39,22 @@ export default function Home() {
   if (loading) return <div className="login-wrap">Memuat...</div>;
   if (!user || !profile) return <Login />;
   return <main className="container">
-    <header>
+    <header className="app-header">
       <div className="brand"><FiHash size={24}/><h1>IPK Planner</h1><span className="badge">Cloud Save</span></div>
-      <div className="flex">
+      <div className="flex header-actions">
         <div className="top-user hide-mobile"><strong>{profile.name}</strong><span className="muted">{profile.nim}</span></div>
-        <button className="btn ghost" onClick={()=>{setCplOpen(!cplOpen);setAdminOpen(false)}}>{cplOpen?<FiHome/>:<FiBarChart2/>} {cplOpen?"Planner":"CPL"}</button>
-        {profile.role === "admin" && <button className="btn ghost" onClick={() => {setAdminOpen(!adminOpen);setCplOpen(false)}}><FiUsers/> Admin</button>}
+        <button className="btn ghost desktop-nav" onClick={()=>{setCplOpen(!cplOpen);setAdminOpen(false)}}>{cplOpen?<FiHome/>:<FiBarChart2/>} {cplOpen?"Planner":"CPL"}</button>
+        {profile.role === "admin" && <button className="btn ghost desktop-nav" onClick={() => {setAdminOpen(!adminOpen);setCplOpen(false)}}><FiUsers/> Admin</button>}
         <button aria-label="Ganti tema" className="btn ghost icon" onClick={toggleTheme}>{theme === "dark" ? <FiMoon/> : <FiSun/>}</button>
-        <button className="btn danger" onClick={() => signOut(auth)}><FiLogOut/> Keluar</button>
+        <button aria-label="Keluar" className="btn danger logout-btn" onClick={() => signOut(auth)}><FiLogOut/><span>Keluar</span></button>
       </div>
     </header>
     {adminOpen && profile.role === "admin" ? <AdminPanel user={user}/> : cplOpen ? <CplDashboard uid={user.uid} theme={theme}/> : <Planner uid={user.uid} theme={theme}/>} 
+    <nav className="mobile-nav" aria-label="Navigasi utama">
+      <button className={!cplOpen&&!adminOpen?"active":""} onClick={()=>{setCplOpen(false);setAdminOpen(false)}}><FiHome/><span>Planner</span></button>
+      <button className={cplOpen?"active":""} onClick={()=>{setCplOpen(true);setAdminOpen(false)}}><FiBarChart2/><span>CPL</span></button>
+      {profile.role==="admin"&&<button className={adminOpen?"active":""} onClick={()=>{setAdminOpen(true);setCplOpen(false)}}><FiUsers/><span>Admin</span></button>}
+    </nav>
   </main>;
 }
 
