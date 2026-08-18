@@ -24,6 +24,16 @@ const courseSheet=wb.getWorksheet("10. Susunan Mata Kuliah"); const courses=[];
 for(let r=3;r<=52;r++){const name=text(courseSheet.getCell(r,3).value);if(!name)continue;let semester=null;for(let c=5;c<=12;c++)if(text(courseSheet.getCell(r,c).value)){semester=c-4;break}courses.push({name,sks:Number(courseSheet.getCell(r,4).value)||0,semester,cplCodes:[]})}
 const cplMk=wb.getWorksheet("9. CPL-MK");
 for(let r=6;r<=64;r++){const name=text(cplMk.getCell(r,2).value);if(!name)continue;const found=courses.find(x=>x.name.toLowerCase()===name.toLowerCase())||courses.find(x=>x.name.toLowerCase().includes(name.toLowerCase())||name.toLowerCase().includes(x.name.toLowerCase()));if(!found)continue;for(let c=3;c<=12;c++)if(text(cplMk.getCell(r,c).value))found.cplCodes.push(`CPL${c-2}`)}
+const fallbackMappings={
+  "Statistika, Probabilitas dan Proses Acak":["CPL1"],
+  "Mesin Listrik & Sistem Tenaga":["CPL1","CPL2","CPL3","CPL5","CPL8"],
+  "MK Pendalaman: Elektronika dan Gelombang Mikro":["CPL1","CPL3","CPL5","CPL8"],
+  "MK Pilihan teleko: antena dan propagasi, komunikasi satelit, komunikasi radar":["CPL1","CPL3","CPL5","CPL8"],
+  "MK Pilihan: Topik EL lainnya (Green Technology)":["CPL1","CPL3","CPL8"],
+  "Bahasa Indonesia dan Penulisan Ilmiah":["CPL5","CPL6","CPL8"],
+  "MK Pilihan lainnya dan Manajemen: Bisnis dan Regulasi Telekomunikasi, Machine Learning dan Artificial Intelligence":["CPL1","CPL2","CPL3","CPL7","CPL8","CPL9"]
+};
+for(const course of courses)if(!course.cplCodes.length&&fallbackMappings[course.name])course.cplCodes=fallbackMappings[course.name];
 
 const cpmkSheet=wb.getWorksheet("12b. Pemetaan CPL-CPMK-MK (2)"); const cpmks=[];let currentCpl="";
 for(let r=4;r<=Math.min(cpmkSheet.rowCount,300);r++){const row=cpmkSheet.getRow(r);const rawCpl=text(row.getCell(2).value)||text(row.getCell(1).value);if(/^CPL\s*0?\d+$/i.test(rawCpl))currentCpl=`CPL${Number(rawCpl.match(/\d+/)[0])}`;const code=text(row.getCell(4).value),description=text(row.getCell(5).value),course=text(row.getCell(6).value);if(code&&description&&currentCpl)cpmks.push({code,description,course,cplCode:currentCpl})}
