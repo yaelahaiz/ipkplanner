@@ -2,6 +2,8 @@
 
 Aplikasi Next.js untuk menghitung IPS/IPK, menyimpan data per mahasiswa di Firebase, dan mengelola akun melalui panel admin. Nilai **D berbobot 1 dan E berbobot 0 pada IPS/IPK**, tetapi keduanya tidak menambah SKS lulus. Jika mata kuliah diulang, percobaan terbaru dengan nama mata kuliah yang sama dipakai pada IPK kumulatif.
 
+Modul CPL menghubungkan mata kuliah → CPMK → CPL → profil lulusan. Nilai CPL dihitung sebagai rata-rata nilai CPMK pada skala 0–100 dan dibandingkan dengan target program studi.
+
 ## Menjalankan lokal
 
 1. Buat project Firebase, aktifkan **Authentication > Email/Password**, dan buat database **Cloud Firestore**.
@@ -14,6 +16,12 @@ Setelah environment Firebase Admin tersedia, jalankan:
 
 ```bash
 node scripts/create-admin.mjs 12345678 "Administrator" password-kuat
+```
+
+Import kurikulum Teknik Elektro dari workbook resmi:
+
+```bash
+node scripts/import-curriculum.mjs "C:\path\Template-Kurikulum.xlsx"
 ```
 
 NIM dipetakan internal menjadi email sintetis Firebase; pengguna tetap hanya memasukkan NIM.

@@ -7,13 +7,15 @@ import { auth, db, firebaseConfigured, nimEmail } from "@/lib/firebase";
 import type { UserProfile } from "@/lib/types";
 import Planner from "@/components/Planner";
 import AdminPanel from "@/components/AdminPanel";
-import { FiEye, FiEyeOff, FiHash, FiLogOut, FiMoon, FiSun, FiUsers } from "react-icons/fi";
+import CplDashboard from "@/components/CplDashboard";
+import { FiBarChart2, FiEye, FiEyeOff, FiHash, FiHome, FiLogOut, FiMoon, FiSun, FiUsers } from "react-icons/fi";
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [adminOpen, setAdminOpen] = useState(false);
+  const [cplOpen, setCplOpen] = useState(false);
   const [theme, setTheme] = useState("dark");
 
   useEffect(() => {
@@ -41,12 +43,13 @@ export default function Home() {
       <div className="brand"><FiHash size={24}/><h1>IPK Planner</h1><span className="badge">Cloud Save</span></div>
       <div className="flex">
         <div className="top-user hide-mobile"><strong>{profile.name}</strong><span className="muted">{profile.nim}</span></div>
-        {profile.role === "admin" && <button className="btn ghost" onClick={() => setAdminOpen(!adminOpen)}><FiUsers/> Admin</button>}
+        <button className="btn ghost" onClick={()=>{setCplOpen(!cplOpen);setAdminOpen(false)}}>{cplOpen?<FiHome/>:<FiBarChart2/>} {cplOpen?"Planner":"CPL"}</button>
+        {profile.role === "admin" && <button className="btn ghost" onClick={() => {setAdminOpen(!adminOpen);setCplOpen(false)}}><FiUsers/> Admin</button>}
         <button aria-label="Ganti tema" className="btn ghost icon" onClick={toggleTheme}>{theme === "dark" ? <FiMoon/> : <FiSun/>}</button>
         <button className="btn danger" onClick={() => signOut(auth)}><FiLogOut/> Keluar</button>
       </div>
     </header>
-    {adminOpen && profile.role === "admin" ? <AdminPanel user={user}/> : <Planner uid={user.uid} theme={theme}/>} 
+    {adminOpen && profile.role === "admin" ? <AdminPanel user={user}/> : cplOpen ? <CplDashboard uid={user.uid} theme={theme}/> : <Planner uid={user.uid} theme={theme}/>} 
   </main>;
 }
 
